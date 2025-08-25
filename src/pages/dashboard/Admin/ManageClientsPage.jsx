@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Button from "../../../components/shared/Button.jsx";
 import { getClients, getClientAgencies, updateClientStatus } from "../../../services/clientService.js";
 import EditModal from "../../../components/ui/Admin/EditModal.jsx";
-import Modal from "../../../components/ui/Modal.jsx";
+import Modal from "../../../components/shared/Modal.jsx";
 import Header from '../../../components/shared/Header.jsx'; 
 import { toast } from "react-toastify"; // Ensure toast is imported for messages
 
@@ -18,7 +18,7 @@ export default function ManageClientsPage() {
   const [agencies, setAgencies] = useState([]);
   const [saving, setSaving] = useState(false);
   const [updating, setUpdating] = useState(null); 
-  const [loadingAgencies, setLoadingAgencies] = useState(false);
+  const [loadingAgencies, setLoadingAgencies] = useState(false); // New state for modal loading
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -98,16 +98,20 @@ export default function ManageClientsPage() {
   const onView = async (row) => {
     setSelected(row);
     setLoadingAgencies(true);
+    setAgenciesOpen(true); // Open modal immediately with loading state
     try {
       const list = await getClientAgencies(row.ClientId);
+      console.log("Fetched agency details:", list); // Correct way to log the array
       setAgencies(list);
+      if (!list || list.length === 0) {
+        toast.info(`No agencies found for ${row.ClientName}.`);
+      }
     } catch (error) {
       console.error("Error fetching client agencies:", error);
       toast.error("Failed to fetch client agencies.");
       setAgencies([]);
     } finally {
       setLoadingAgencies(false);
-      setAgenciesOpen(true);
     }
   };
 
