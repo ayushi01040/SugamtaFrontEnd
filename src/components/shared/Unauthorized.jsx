@@ -16,7 +16,7 @@ const Unauthorized = () => {
         if (role_id === "AO") {
           navigate("/agency-dashboard");
         } else if (role_id === "AC") {
-          navigate("/agency-client");
+          navigate("/agency-client/dashboard");
         } else {
           // Fallback if role is not recognized
           localStorage.removeItem("token");

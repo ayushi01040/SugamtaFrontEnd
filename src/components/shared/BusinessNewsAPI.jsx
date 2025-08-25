@@ -48,7 +48,7 @@ export default function BusinessNews() {
   }
 
   return (
-    <div className="mt-0 p-4 bg-white rounded-lg shadow-md">
+    <div className="mt-0 p-2 bg-white rounded-lg shadow-md">
       <h3 className="text-xl font-bold text-[#334155] mb-4">Latest Business Headline</h3>
       <a href={headline.url} target="_blank" rel="noopener noreferrer" className="block">
         <h4 className="text-md font-semibold text-[#2563EB] hover:underline">{headline.title}</h4>

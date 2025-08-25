@@ -35,22 +35,35 @@ export default function LoginAuth({ toggleView }) {
       const token = data.token;
       localStorage.setItem("token", token);
       const payload = JSON.parse(atob(token.split(".")[1]));
-      const role_id = payload.roleid;
+      // payload.roleid is now an array, e.g., ["AO"] or ["ADMIN", "AO"]
+      const userRoles = payload.roleid; 
       const client_name = response.data.data.agency_name;
 
-      console.log("Login success, Role ID:", role_id);
+      console.log("Login success, User Roles:", userRoles);
       toast.success("Login Successful!");
 
-      if (role_id === "AO") {
+      const isAdminUser = userRoles.includes("ADMIN");
+      const isAOUser = userRoles.includes("AO");
+      const isACUser = userRoles.includes("AC");
+
+      if (isAdminUser) {
+        // Admin users go to agency dashboard first, with a flag for the button
         nav("/agency-dashboard", {
-          state: { roleId: role_id, clientName: client_name },
+          state: { roles: userRoles, clientName: client_name, isSuperAdmin: true },
         });
-      } else if (role_id === "AC") {
-        nav("/agency-client", {
-          state: { roleId: role_id, clientName: client_name },
+      } else if (isAOUser) {
+        // Regular Agency Owners (not admin) go to their dashboard without the admin flag
+        nav("/agency-dashboard", {
+          state: { roles: userRoles, clientName: client_name, isSuperAdmin: false }, // Explicitly set false
+        });
+      } else if (isACUser) {
+        // Agency Clients go to their specific dashboard
+        nav("/agency-client/dashboard", {
+          state: { roles: userRoles, clientName: client_name },
         });
       } else {
-        nav("/dashboard", { state: { roleId: role_id, clientName: client_name } });
+        // Fallback for any other role
+        nav("/dashboard", { state: { roles: userRoles, clientName: client_name } });
       }
     } catch (err) {
       console.error(
